@@ -15,14 +15,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: app           
-          POSTGRES_PASSWORD: "1234567890Q"  
-          POSTGRES_USER: app         
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          POSTGRES_DB: app
+          POSTGRES_PASSWORD: "1234567890Q"
+          POSTGRES_USER: app
         ports:
           - 5432:5432
 
@@ -34,41 +29,20 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.3'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql, zip
-        coverage: none
-
-    - name: Validate composer.json
-      run: composer validate --strict
+        extensions: pdo_pgsql, zip
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-interaction
+      run: composer install --no-progress --no-interaction
 
-    - name: Create test environment file
+    - name: Setup environment
       run: |
-        if [ -f .env.test ]; then
-          cp .env.test .env
-        else
-          cat > .env << 'EOF'
-          APP_ENV=test
-          DATABASE_URL="postgresql://app:1234567890Q@localhost:5432/app?serverVersion=16&charset=utf8"
-          APP_SECRET=testsecret123
-          EOF
-        fi
+        echo "APP_ENV=test" > .env
+        echo 'DATABASE_URL="postgresql://app:1234567890Q@localhost:5432/app_test"' >> .env
 
     - name: Create database
       run: |
         php bin/console doctrine:database:create --env=test --if-not-exists
         php bin/console doctrine:migrations:migrate --env=test --no-interaction
 
-    - name: Run PHPUnit tests
-      run: ./vendor/bin/phpunit --colors=always
-
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: test-results
-        path: |
-          var/log/
-          var/cache/
-        retention-days: 7
+    - name: Run tests
+      run: ./vendor/bin/phpunit
