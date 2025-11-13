@@ -1,0 +1,74 @@
+name: Run Tests
+
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: '*'
+
+jobs:
+  tests:
+    name: PHP Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: app           
+          POSTGRES_PASSWORD: "1234567890Q"  
+          POSTGRES_USER: app         
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql, zip
+        coverage: none
+
+    - name: Validate composer.json
+      run: composer validate --strict
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-interaction
+
+    - name: Create test environment file
+      run: |
+        if [ -f .env.test ]; then
+          cp .env.test .env
+        else
+          cat > .env << 'EOF'
+          APP_ENV=test
+          DATABASE_URL="postgresql://app:1234567890Q@localhost:5432/app?serverVersion=16&charset=utf8"
+          APP_SECRET=testsecret123
+          EOF
+        fi
+
+    - name: Create database
+      run: |
+        php bin/console doctrine:database:create --env=test --if-not-exists
+        php bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+    - name: Run PHPUnit tests
+      run: ./vendor/bin/phpunit --colors=always
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-results
+        path: |
+          var/log/
+          var/cache/
+        retention-days: 7
