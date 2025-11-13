@@ -2,17 +2,50 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: "App\Repository\HouseRepository")]
+#[ORM\Table(name: "houses")]
 class House
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
+    private int $id;
+
+    #[ORM\Column(type: "string", length: 255)]
+    private string $name;
+
+    #[ORM\Column(type: "integer")]
+    private int $pricePerNight;
+
+    #[ORM\Column(type: "integer")]
+    private int $capacity;
+
+    #[ORM\Column(type: "integer")]
+    private int $distanceToSea;
+
+    #[ORM\Column(type: "string", length: 255)]
+    private string $amenities;
+
+    #[ORM\Column(type: "boolean")]
+    private bool $isAvailable;
+
     public function __construct(
-        private int $id,
-        private string $name,
-        private int $pricePerNight,
-        private int $capacity,
-        private int $distanceToSea,
-        private string $amenities,
-        private bool $isAvailable
-    ) {}
+        string $name,
+        int $pricePerNight,
+        int $capacity,
+        int $distanceToSea,
+        string $amenities,
+        bool $isAvailable = true
+    ) {
+        $this->name = $name;
+        $this->pricePerNight = $pricePerNight;
+        $this->capacity = $capacity;
+        $this->distanceToSea = $distanceToSea;
+        $this->amenities = $amenities;
+        $this->isAvailable = $isAvailable;
+    }
 
     // Геттеры
     public function getId(): int { return $this->id; }
@@ -37,31 +70,5 @@ class House
     public function hasAmenity(string $amenity): bool
     {
         return str_contains($this->amenities, $amenity);
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'price_per_night' => $this->pricePerNight,
-            'capacity' => $this->capacity,
-            'distance_to_sea' => $this->distanceToSea,
-            'amenities' => $this->amenities,
-            'is_available' => $this->isAvailable
-        ];
-    }
-
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            (int)$data['id'],
-            $data['name'],
-            (int)$data['price_per_night'],
-            (int)$data['capacity'],
-            (int)$data['distance_to_sea'],
-            $data['amenities'],
-            $data['is_available'] === 'true'
-        );
     }
 }

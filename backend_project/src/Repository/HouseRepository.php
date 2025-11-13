@@ -4,32 +4,40 @@ namespace App\Repository;
 
 use App\Entity\House;
 use App\Repository\Interfaces\HouseRepositoryInterface;
-use App\Services\CsvDataService;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class HouseRepository implements HouseRepositoryInterface
+class HouseRepository extends ServiceEntityRepository implements HouseRepositoryInterface
 {
-    public function __construct(private CsvDataService $csvService) {}
-
-    public function findAll(): array
+    public function __construct(ManagerRegistry $registry)
     {
-        $data = $this->csvService->readHouses();
-        return array_map([House::class, 'fromArray'], $data);
-    }
-
-    public function findAvailable(): array
-    {
-        $houses = $this->findAll();
-        return array_filter($houses, fn($house) => $house->isAvailable());
+        parent::__construct($registry, House::class);
     }
 
     public function findById(int $id): ?House
     {
-        $houses = $this->findAll();
-        foreach ($houses as $house) {
-            if ($house->getId() === $id) {
-                return $house;
-            }
-        }
-        return null;
+        return $this->findOneBy(['id' => $id]);
+    }
+
+    public function findAll(): array
+    {
+        return parent::findAll();
+    }
+
+    public function findAvailableHouses(): array
+    {
+        return $this->findBy(['isAvailable' => true]);
+    }
+
+    public function save(House $house): void
+    {
+        $this->getEntityManager()->persist($house);
+        $this->getEntityManager()->flush();
+    }
+
+    public function remove(House $house): void
+    {
+        $this->getEntityManager()->remove($house);
+        $this->getEntityManager()->flush();
     }
 }

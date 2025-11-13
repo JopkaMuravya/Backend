@@ -3,68 +3,53 @@
 namespace App\Repository;
 
 use App\Entity\Booking;
+use App\Entity\User;
+use App\Entity\House;
 use App\Repository\Interfaces\BookingRepositoryInterface;
-use App\Services\CsvDataService;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class BookingRepository implements BookingRepositoryInterface
+class BookingRepository extends ServiceEntityRepository implements BookingRepositoryInterface
 {
-    public function __construct(private CsvDataService $csvService) {}
-
-    public function findAll(): array
+    public function __construct(ManagerRegistry $registry)
     {
-        $data = $this->csvService->readBookings();
-        return array_map([Booking::class, 'fromArray'], $data);
+        parent::__construct($registry, Booking::class);
     }
 
     public function findById(int $id): ?Booking
     {
-        $bookings = $this->findAll();
-        foreach ($bookings as $booking) {
-            if ($booking->getId() === $id) {
-                return $booking;
-            }
-        }
-        return null;
+        return $this->findOneBy(['id' => $id]);
     }
 
-    public function save(Booking $booking): bool
+    public function findAll(): array
     {
-        $bookings = $this->findAll();
-
-        if ($booking->getId() === 0) {
-            $newId = empty($bookings) ? 1 : max(array_map(fn($b) => $b->getId(), $bookings)) + 1;
-            $reflection = new \ReflectionClass($booking);
-            $idProperty = $reflection->getProperty('id');
-            $idProperty->setAccessible(true);
-            $idProperty->setValue($booking, $newId);
-
-            $bookings[] = $booking;
-        } else {
-            foreach ($bookings as $key => $existingBooking) {
-                if ($existingBooking->getId() === $booking->getId()) {
-                    $bookings[$key] = $booking;
-                    break;
-                }
-            }
-        }
-        return $this->csvService->writeBookings(
-            array_map(fn($b) => $b->toArray(), $bookings)
-        );
+        return parent::findAll();
     }
 
-    public function delete(int $id): bool
+    public function findByUser(User $user): array
     {
-        $bookings = $this->findAll();
-        $bookings = array_filter($bookings, fn($booking) => $booking->getId() !== $id);
-        
-        return $this->csvService->writeBookings(
-            array_map(fn($b) => $b->toArray(), array_values($bookings))
-        );
+        return $this->findBy(['guest' => $user], ['createdAt' => 'DESC']);
     }
 
-    public function findByHouseId(int $houseId): array
+    public function findByPending(): array
     {
-        $bookings = $this->findAll();
-        return array_filter($bookings, fn($booking) => $booking->getHouseId() === $houseId);
+        return $this->findBy(['status' => 'pending'], ['createdAt' => 'ASC']);
+    }
+
+    public function findByHouse(House $house): array
+    {
+        return $this->findBy(['house' => $house], ['createdAt' => 'DESC']);
+    }
+
+    public function save(Booking $booking): void
+    {
+        $this->getEntityManager()->persist($booking);
+        $this->getEntityManager()->flush();
+    }
+
+    public function remove(Booking $booking): void
+    {
+        $this->getEntityManager()->remove($booking);
+        $this->getEntityManager()->flush();
     }
 }
