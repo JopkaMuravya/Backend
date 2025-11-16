@@ -48,13 +48,34 @@ class Booking
     }
 
     // Геттеры
-    public function getId(): int { return $this->id; }
-    public function getGuest(): User { return $this->guest; }
-    public function getHouse(): House { return $this->house; }
-    public function getComment(): string { return $this->comment; }
-    public function getStatus(): string { return $this->status; }
-    public function getCreatedAt(): \DateTimeInterface { return $this->createdAt; }
-    public function getUpdatedAt(): \DateTimeInterface { return $this->updatedAt; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+    public function getGuest(): User
+    {
+        return $this->guest;
+    }
+    public function getHouse(): House
+    {
+        return $this->house;
+    }
+    public function getComment(): string
+    {
+        return $this->comment;
+    }
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+    public function getUpdatedAt(): \DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
 
     // Сеттеры
     public function setComment(string $comment): void

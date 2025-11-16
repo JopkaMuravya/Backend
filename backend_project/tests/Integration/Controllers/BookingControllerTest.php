@@ -10,15 +10,15 @@ class SimpleBookingControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/bookings');
-        
+
         $this->assertResponseStatusCodeSame(401);
     }
-    
+
     public function testCreateBookingRequiresLogin(): void
     {
         $client = static::createClient();
         $client->request('POST', '/api/bookings');
-        
+
         $this->assertResponseStatusCodeSame(401);
     }
 }

@@ -19,7 +19,8 @@ class BookingController extends AbstractController
         private BookingRepositoryInterface $bookingRepository,
         private HouseRepositoryInterface $houseRepository,
         private BookingService $bookingService
-    ) {}
+    ) {
+    }
 
     #[Route('/bookings', name: 'api_booking_list', methods: ['GET'])]
     public function list(): JsonResponse
@@ -28,8 +29,8 @@ class BookingController extends AbstractController
 
         $user = $this->getUser();
         $bookings = $this->bookingRepository->findByUser($user);
-        
-        $data = array_map(function(Booking $booking) {
+
+        $data = array_map(function (Booking $booking) {
             return [
                 'id' => $booking->getId(),
                 'houseId' => $booking->getHouse()->getId(),
@@ -40,7 +41,7 @@ class BookingController extends AbstractController
                 'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s')
             ];
         }, $bookings);
-        
+
         return $this->json($data);
     }
 
@@ -48,8 +49,8 @@ class BookingController extends AbstractController
     public function pending(): JsonResponse
     {
         $bookings = $this->bookingRepository->findByPending();
-        
-        $data = array_map(function(Booking $booking) {
+
+        $data = array_map(function (Booking $booking) {
             return [
                 'id' => $booking->getId(),
                 'houseId' => $booking->getHouse()->getId(),
@@ -59,7 +60,7 @@ class BookingController extends AbstractController
                 'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s')
             ];
         }, $bookings);
-        
+
         return $this->json($data);
     }
 
@@ -67,7 +68,7 @@ class BookingController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        
+
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
 
@@ -85,13 +86,12 @@ class BookingController extends AbstractController
             }
 
             $booking = $this->bookingService->createBooking($user, $house, $comment);
-            
+
             return $this->json([
                 'id' => $booking->getId(),
                 'status' => $booking->getStatus(),
                 'message' => 'Booking created successfully'
             ], Response::HTTP_CREATED);
-            
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -104,9 +104,8 @@ class BookingController extends AbstractController
 
         try {
             $this->bookingService->cancelBooking($id, $user);
-            
+
             return $this->json(['message' => 'Booking cancelled successfully']);
-            
         } catch (\InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -116,11 +115,11 @@ class BookingController extends AbstractController
     public function show(int $id): JsonResponse
     {
         $booking = $this->bookingRepository->findById($id);
-        
+
         if (!$booking) {
             return $this->json(['error' => 'Booking not found'], Response::HTTP_NOT_FOUND);
         }
-        
+
         $data = [
             'id' => $booking->getId(),
             'house' => [
@@ -136,7 +135,7 @@ class BookingController extends AbstractController
             'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $booking->getUpdatedAt()->format('Y-m-d H:i:s')
         ];
-        
+
         return $this->json($data);
     }
 }

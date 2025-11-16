@@ -16,7 +16,7 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): JsonResponse
     {
         $user = $this->getUser();
-        
+
         if ($user instanceof User) {
             return $this->json([
                 'message' => 'Already logged in',
@@ -30,7 +30,7 @@ class SecurityController extends AbstractController
 
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
-        
+
         return $this->json([
             'error' => $error ? $error->getMessage() : 'Authentication failed',
             'last_username' => $lastUsername

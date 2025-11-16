@@ -48,13 +48,34 @@ class House
     }
 
     // Геттеры
-    public function getId(): int { return $this->id; }
-    public function getName(): string { return $this->name; }
-    public function getPricePerNight(): int { return $this->pricePerNight; }
-    public function getCapacity(): int { return $this->capacity; }
-    public function getDistanceToSea(): int { return $this->distanceToSea; }
-    public function getAmenities(): string { return $this->amenities; }
-    public function isAvailable(): bool { return $this->isAvailable; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    public function getPricePerNight(): int
+    {
+        return $this->pricePerNight;
+    }
+    public function getCapacity(): int
+    {
+        return $this->capacity;
+    }
+    public function getDistanceToSea(): int
+    {
+        return $this->distanceToSea;
+    }
+    public function getAmenities(): string
+    {
+        return $this->amenities;
+    }
+    public function isAvailable(): bool
+    {
+        return $this->isAvailable;
+    }
 
     // Бизнес-логика
     public function canAccommodate(int $guests): bool

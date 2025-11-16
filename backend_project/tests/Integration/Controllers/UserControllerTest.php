@@ -10,15 +10,15 @@ class SimpleUserControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/profile');
-        
+
         $this->assertResponseStatusCodeSame(401);
     }
-    
+
     public function testRegisterEndpointExists(): void
     {
         $client = static::createClient();
         $client->request('POST', '/api/register');
-        
+
         $this->assertResponseStatusCodeSame(400);
     }
 }

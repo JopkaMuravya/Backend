@@ -10,23 +10,23 @@ class SimpleHouseControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/houses');
-        
+
         $this->assertResponseIsSuccessful();
     }
-    
+
     public function testHousesReturnsJson(): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/houses');
-        
+
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
     }
-    
+
     public function testAvailableHousesEndpointWorks(): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/houses/available');
-        
+
         $this->assertResponseIsSuccessful();
     }
 }

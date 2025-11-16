@@ -10,15 +10,15 @@ class SimpleSecurityControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('POST', '/api/login');
-        
+
         $this->assertResponseStatusCodeSame(401);
     }
-    
+
     public function testLoginReturnsJson(): void
     {
         $client = static::createClient();
         $client->request('POST', '/api/login');
-        
+
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
     }
 }

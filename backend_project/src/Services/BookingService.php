@@ -11,7 +11,8 @@ class BookingService
 {
     public function __construct(
         private BookingRepositoryInterface $bookingRepository
-    ) {}
+    ) {
+    }
 
     public function createBooking(User $user, House $house, string $comment): Booking
     {
@@ -28,7 +29,7 @@ class BookingService
     public function confirmBooking(int $bookingId): void
     {
         $booking = $this->bookingRepository->findById($bookingId);
-        
+
         if (!$booking) {
             throw new \InvalidArgumentException('Booking not found');
         }
@@ -40,7 +41,7 @@ class BookingService
     public function cancelBooking(int $bookingId, User $user): void
     {
         $booking = $this->bookingRepository->findById($bookingId);
-        
+
         if (!$booking) {
             throw new \InvalidArgumentException('Booking not found');
         }

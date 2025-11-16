@@ -23,10 +23,10 @@ class BookingServiceTest extends TestCase
     {
         $this->bookingRepository = $this->createMock(BookingRepositoryInterface::class);
         $this->bookingService = new BookingService($this->bookingRepository);
-        
+
         $this->user = $this->createUser(1, 'test@example.com', '+1234567890', 'John', 'Doe');
         $this->otherUser = $this->createUser(2, 'other@example.com', '+0987654321', 'Jane', 'Smith');
-        
+
         $this->availableHouse = $this->createHouse(1, 'Test House', 100, 4, 500, 'WiFi,TV', true);
         $this->unavailableHouse = $this->createHouse(2, 'Unavailable House', 150, 6, 300, 'WiFi,TV,Pool', false);
     }
@@ -34,36 +34,43 @@ class BookingServiceTest extends TestCase
     private function createUser(int $id, string $email, string $phone, string $firstName, string $lastName): User
     {
         $user = new User($email, $phone, 'password', $firstName, $lastName);
-        
+
         $reflection = new ReflectionClass($user);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
         $property->setValue($user, $id);
-        
+
         return $user;
     }
 
-    private function createHouse(int $id, string $name, int $price, int $capacity, int $distance, string $amenities, bool $available): House
-    {
+    private function createHouse(
+        int $id,
+        string $name,
+        int $price,
+        int $capacity,
+        int $distance,
+        string $amenities,
+        bool $available
+    ): House {
         $house = new House($name, $price, $capacity, $distance, $amenities, $available);
-        
+
         $reflection = new ReflectionClass($house);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
         $property->setValue($house, $id);
-        
+
         return $house;
     }
 
     private function createBooking(int $id, User $user, House $house, string $comment, string $status): Booking
     {
         $booking = new Booking($user, $house, $comment, $status);
-        
+
         $reflection = new ReflectionClass($booking);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
         $property->setValue($booking, $id);
-        
+
         return $booking;
     }
 
@@ -71,7 +78,7 @@ class BookingServiceTest extends TestCase
     {
         // Arrange
         $comment = 'Test booking comment';
-        
+
         $this->bookingRepository
             ->expects($this->once())
             ->method('save')
@@ -79,8 +86,8 @@ class BookingServiceTest extends TestCase
 
         // Act
         $booking = $this->bookingService->createBooking(
-            $this->user, 
-            $this->availableHouse, 
+            $this->user,
+            $this->availableHouse,
             $comment
         );
 
@@ -103,8 +110,8 @@ class BookingServiceTest extends TestCase
 
         // Act
         $this->bookingService->createBooking(
-            $this->user, 
-            $this->unavailableHouse, 
+            $this->user,
+            $this->unavailableHouse,
             $comment
         );
     }
@@ -114,7 +121,7 @@ class BookingServiceTest extends TestCase
         // Arrange
         $bookingId = 1;
         $booking = $this->createBooking($bookingId, $this->user, $this->availableHouse, 'Test', 'pending');
-        
+
         $this->bookingRepository
             ->method('findById')
             ->with($bookingId)
@@ -136,7 +143,7 @@ class BookingServiceTest extends TestCase
     {
         // Arrange
         $bookingId = 999;
-        
+
         $this->bookingRepository
             ->method('findById')
             ->with($bookingId)
@@ -155,7 +162,7 @@ class BookingServiceTest extends TestCase
         // Arrange
         $bookingId = 1;
         $booking = $this->createBooking($bookingId, $this->user, $this->availableHouse, 'Test', 'pending');
-        
+
         $this->bookingRepository
             ->method('findById')
             ->with($bookingId)
@@ -177,7 +184,7 @@ class BookingServiceTest extends TestCase
     {
         // Arrange
         $bookingId = 999;
-        
+
         $this->bookingRepository
             ->method('findById')
             ->with($bookingId)
@@ -196,7 +203,7 @@ class BookingServiceTest extends TestCase
         // Arrange
         $bookingId = 1;
         $booking = $this->createBooking($bookingId, $this->user, $this->availableHouse, 'Test', 'pending');
-        
+
         $this->bookingRepository
             ->method('findById')
             ->with($bookingId)
@@ -215,7 +222,7 @@ class BookingServiceTest extends TestCase
         // Arrange
         $bookingId = 1;
         $booking = $this->createBooking($bookingId, $this->user, $this->availableHouse, 'Test', 'cancelled');
-        
+
         $this->bookingRepository
             ->method('findById')
             ->with($bookingId)
@@ -236,7 +243,7 @@ class BookingServiceTest extends TestCase
             $this->createBooking(1, $this->user, $this->availableHouse, 'Booking 1', 'pending'),
             $this->createBooking(2, $this->user, $this->availableHouse, 'Booking 2', 'confirmed')
         ];
-        
+
         $this->bookingRepository
             ->expects($this->once())
             ->method('findByUser')
@@ -256,7 +263,7 @@ class BookingServiceTest extends TestCase
         $expectedBookings = [
             $this->createBooking(1, $this->user, $this->availableHouse, 'Pending 1', 'pending')
         ];
-        
+
         $this->bookingRepository
             ->expects($this->once())
             ->method('findByPending')
@@ -275,7 +282,7 @@ class BookingServiceTest extends TestCase
         $expectedBookings = [
             $this->createBooking(1, $this->user, $this->availableHouse, 'House Booking', 'pending')
         ];
-        
+
         $this->bookingRepository
             ->expects($this->once())
             ->method('findByHouse')

@@ -50,18 +50,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     // Геттеры
-    public function getId(): int { return $this->id; }
-    public function getEmail(): string { return $this->email; }
-    public function getPhone(): string { return $this->phone; }
-    public function getPassword(): string { return $this->password; }
-    public function getFirstName(): string { return $this->firstName; }
-    public function getLastName(): string { return $this->lastName; }
-    public function getRoles(): array { return $this->roles; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+    public function getPhone(): string
+    {
+        return $this->phone;
+    }
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
 
     // Методы UserInterface
-    public function getUserIdentifier(): string { return $this->email; }
-    public function eraseCredentials(): void {}
-    public function getSalt(): ?string { return null; }
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+    public function eraseCredentials(): void
+    {
+    }
+    public function getSalt(): ?string
+    {
+        return null;
+    }
 
     // Сеттеры
     public function setPassword(string $password): void
