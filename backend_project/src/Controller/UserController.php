@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\Interfaces\UserRepositoryInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +19,7 @@ class UserController extends AbstractController
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
     ) {
     }
 
@@ -28,7 +31,7 @@ class UserController extends AbstractController
 
         if (!$user) {
             return $this->json([
-                'error' => 'Authentication required'
+                'error' => 'Authentication required',
             ], Response::HTTP_UNAUTHORIZED); // 401
         }
 
@@ -38,7 +41,7 @@ class UserController extends AbstractController
             'firstName' => $user->getFirstName(),
             'lastName' => $user->getLastName(),
             'phone' => $user->getPhone(),
-            'roles' => $user->getRoles()
+            'roles' => $user->getRoles(),
         ];
 
         return $this->json($data);
@@ -57,7 +60,7 @@ class UserController extends AbstractController
                 'email' => $user->getEmail(),
                 'firstName' => $user->getFirstName(),
                 'lastName' => $user->getLastName(),
-                'roles' => $user->getRoles()
+                'roles' => $user->getRoles(),
             ];
         }, $users);
 
@@ -81,7 +84,7 @@ class UserController extends AbstractController
             'firstName' => $user->getFirstName(),
             'lastName' => $user->getLastName(),
             'phone' => $user->getPhone(),
-            'roles' => $user->getRoles()
+            'roles' => $user->getRoles(),
         ];
 
         return $this->json($data);
@@ -96,7 +99,7 @@ class UserController extends AbstractController
         foreach ($requiredFields as $field) {
             if (empty($data[$field])) {
                 return $this->json([
-                    'error' => "Field '$field' is required"
+                    'error' => "Field '$field' is required",
                 ], Response::HTTP_BAD_REQUEST);
             }
         }
@@ -110,7 +113,7 @@ class UserController extends AbstractController
         $existingUser = $this->userRepository->findByEmail($email);
         if ($existingUser) {
             return $this->json([
-                'error' => 'User with this email already exists'
+                'error' => 'User with this email already exists',
             ], Response::HTTP_CONFLICT);
         }
 
@@ -121,7 +124,7 @@ class UserController extends AbstractController
                 '',
                 $firstName,
                 $lastName,
-                ['ROLE_USER']
+                ['ROLE_USER'],
             );
 
             $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
@@ -137,12 +140,12 @@ class UserController extends AbstractController
                     'firstName' => $user->getFirstName(),
                     'lastName' => $user->getLastName(),
                     'phone' => $user->getPhone(),
-                    'roles' => $user->getRoles()
-                ]
+                    'roles' => $user->getRoles(),
+                ],
             ], Response::HTTP_CREATED);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json([
-                'error' => 'Registration failed: ' . $e->getMessage()
+                'error' => 'Registration failed: ' . $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

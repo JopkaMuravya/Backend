@@ -1,34 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repository\HouseRepository")]
-#[ORM\Table(name: "houses")]
+#[ORM\Table(name: 'houses')]
 class House
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private int $pricePerNight;
 
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private int $capacity;
 
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private int $distanceToSea;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $amenities;
 
-    #[ORM\Column(type: "boolean")]
+    #[ORM\Column(type: 'boolean')]
     private bool $isAvailable;
 
     public function __construct(
@@ -37,7 +39,7 @@ class House
         int $capacity,
         int $distanceToSea,
         string $amenities,
-        bool $isAvailable = true
+        bool $isAvailable = true,
     ) {
         $this->name = $name;
         $this->pricePerNight = $pricePerNight;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Repository\Interfaces\HouseRepositoryInterface;
@@ -12,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class HouseController extends AbstractController
 {
     public function __construct(
-        private HouseRepositoryInterface $houseRepository
+        private HouseRepositoryInterface $houseRepository,
     ) {
     }
 
@@ -29,7 +31,7 @@ class HouseController extends AbstractController
                 'capacity' => $house->getCapacity(),
                 'distanceToSea' => $house->getDistanceToSea(),
                 'amenities' => $house->getAmenities(),
-                'isAvailable' => $house->isAvailable()
+                'isAvailable' => $house->isAvailable(),
             ];
         }, $houses);
 
@@ -46,7 +48,7 @@ class HouseController extends AbstractController
                 'id' => $house->getId(),
                 'name' => $house->getName(),
                 'pricePerNight' => $house->getPricePerNight(),
-                'capacity' => $house->getCapacity()
+                'capacity' => $house->getCapacity(),
             ];
         }, $houses);
 
@@ -69,7 +71,7 @@ class HouseController extends AbstractController
             'capacity' => $house->getCapacity(),
             'distanceToSea' => $house->getDistanceToSea(),
             'amenities' => $house->getAmenities(),
-            'isAvailable' => $house->isAvailable()
+            'isAvailable' => $house->isAvailable(),
         ];
 
         return $this->json($data);

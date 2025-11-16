@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Interfaces;
 
 use App\Entity\Booking;
-use App\Entity\User;
 use App\Entity\House;
+use App\Entity\User;
 
 interface BookingRepositoryInterface
 {

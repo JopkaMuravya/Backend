@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -23,8 +25,8 @@ class SecurityController extends AbstractController
                 'user' => [
                     'id' => $user->getId(),
                     'email' => $user->getEmail(),
-                    'roles' => $user->getRoles()
-                ]
+                    'roles' => $user->getRoles(),
+                ],
             ]);
         }
 
@@ -33,7 +35,7 @@ class SecurityController extends AbstractController
 
         return $this->json([
             'error' => $error ? $error->getMessage() : 'Authentication failed',
-            'last_username' => $lastUsername
+            'last_username' => $lastUsername,
         ], Response::HTTP_UNAUTHORIZED);
     }
 

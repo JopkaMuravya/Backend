@@ -1,50 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repository\BookingRepository")]
-#[ORM\Table(name: "bookings")]
+#[ORM\Table(name: 'bookings')]
 class Booking
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(nullable: false)]
     private User $guest;
 
-    #[ORM\ManyToOne(targetEntity: "House")]
+    #[ORM\ManyToOne(targetEntity: 'House')]
     #[ORM\JoinColumn(nullable: false)]
     private House $house;
 
-    #[ORM\Column(type: "text")]
+    #[ORM\Column(type: 'text')]
     private string $comment;
 
-    #[ORM\Column(type: "string", length: 20)]
+    #[ORM\Column(type: 'string', length: 20)]
     private string $status;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private DateTimeInterface $createdAt;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $updatedAt;
+    #[ORM\Column(type: 'datetime')]
+    private DateTimeInterface $updatedAt;
 
     public function __construct(
         User $guest,
         House $house,
         string $comment,
-        string $status = 'pending'
+        string $status = 'pending',
     ) {
         $this->guest = $guest;
         $this->house = $house;
         $this->comment = $comment;
         $this->status = $status;
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     // Геттеры
@@ -68,11 +72,11 @@ class Booking
     {
         return $this->status;
     }
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
-    public function getUpdatedAt(): \DateTimeInterface
+    public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }
@@ -81,12 +85,12 @@ class Booking
     public function setComment(string $comment): void
     {
         $this->comment = $comment;
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     public function setStatus(string $status): void
     {
         $this->status = $status;
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 }

@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Services;
 
 use App\Entity\Booking;
-use App\Entity\User;
 use App\Entity\House;
+use App\Entity\User;
 use App\Repository\Interfaces\BookingRepositoryInterface;
 use App\Services\BookingService;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -50,7 +53,7 @@ class BookingServiceTest extends TestCase
         int $capacity,
         int $distance,
         string $amenities,
-        bool $available
+        bool $available,
     ): House {
         $house = new House($name, $price, $capacity, $distance, $amenities, $available);
 
@@ -88,7 +91,7 @@ class BookingServiceTest extends TestCase
         $booking = $this->bookingService->createBooking(
             $this->user,
             $this->availableHouse,
-            $comment
+            $comment,
         );
 
         // Assert
@@ -105,14 +108,14 @@ class BookingServiceTest extends TestCase
         $comment = 'Test booking comment';
 
         // Assert
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('House is not available');
 
         // Act
         $this->bookingService->createBooking(
             $this->user,
             $this->unavailableHouse,
-            $comment
+            $comment,
         );
     }
 
@@ -150,7 +153,7 @@ class BookingServiceTest extends TestCase
             ->willReturn(null);
 
         // Assert
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Booking not found');
 
         // Act
@@ -191,7 +194,7 @@ class BookingServiceTest extends TestCase
             ->willReturn(null);
 
         // Assert
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Booking not found');
 
         // Act
@@ -210,7 +213,7 @@ class BookingServiceTest extends TestCase
             ->willReturn($booking);
 
         // Assert
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('You can only cancel your own bookings');
 
         // Act
@@ -229,7 +232,7 @@ class BookingServiceTest extends TestCase
             ->willReturn($booking);
 
         // Assert
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('This booking cannot be cancelled');
 
         // Act
@@ -241,7 +244,7 @@ class BookingServiceTest extends TestCase
         // Arrange
         $expectedBookings = [
             $this->createBooking(1, $this->user, $this->availableHouse, 'Booking 1', 'pending'),
-            $this->createBooking(2, $this->user, $this->availableHouse, 'Booking 2', 'confirmed')
+            $this->createBooking(2, $this->user, $this->availableHouse, 'Booking 2', 'confirmed'),
         ];
 
         $this->bookingRepository
@@ -261,7 +264,7 @@ class BookingServiceTest extends TestCase
     {
         // Arrange
         $expectedBookings = [
-            $this->createBooking(1, $this->user, $this->availableHouse, 'Pending 1', 'pending')
+            $this->createBooking(1, $this->user, $this->availableHouse, 'Pending 1', 'pending'),
         ];
 
         $this->bookingRepository
@@ -280,7 +283,7 @@ class BookingServiceTest extends TestCase
     {
         // Arrange
         $expectedBookings = [
-            $this->createBooking(1, $this->user, $this->availableHouse, 'House Booking', 'pending')
+            $this->createBooking(1, $this->user, $this->availableHouse, 'House Booking', 'pending'),
         ];
 
         $this->bookingRepository

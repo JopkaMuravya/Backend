@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Booking;
 use App\Repository\Interfaces\BookingRepositoryInterface;
 use App\Repository\Interfaces\HouseRepositoryInterface;
 use App\Services\BookingService;
+use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +21,7 @@ class BookingController extends AbstractController
     public function __construct(
         private BookingRepositoryInterface $bookingRepository,
         private HouseRepositoryInterface $houseRepository,
-        private BookingService $bookingService
+        private BookingService $bookingService,
     ) {
     }
 
@@ -38,7 +41,7 @@ class BookingController extends AbstractController
                 'guestName' => $booking->getGuest()->getFullName(),
                 'comment' => $booking->getComment(),
                 'status' => $booking->getStatus(),
-                'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s')
+                'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s'),
             ];
         }, $bookings);
 
@@ -57,7 +60,7 @@ class BookingController extends AbstractController
                 'houseName' => $booking->getHouse()->getName(),
                 'guestName' => $booking->getGuest()->getFullName(),
                 'comment' => $booking->getComment(),
-                'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s')
+                'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s'),
             ];
         }, $bookings);
 
@@ -90,9 +93,9 @@ class BookingController extends AbstractController
             return $this->json([
                 'id' => $booking->getId(),
                 'status' => $booking->getStatus(),
-                'message' => 'Booking created successfully'
+                'message' => 'Booking created successfully',
             ], Response::HTTP_CREATED);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -106,7 +109,7 @@ class BookingController extends AbstractController
             $this->bookingService->cancelBooking($id, $user);
 
             return $this->json(['message' => 'Booking cancelled successfully']);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -124,16 +127,16 @@ class BookingController extends AbstractController
             'id' => $booking->getId(),
             'house' => [
                 'id' => $booking->getHouse()->getId(),
-                'name' => $booking->getHouse()->getName()
+                'name' => $booking->getHouse()->getName(),
             ],
             'guest' => [
                 'id' => $booking->getGuest()->getId(),
-                'name' => $booking->getGuest()->getFullName()
+                'name' => $booking->getGuest()->getFullName(),
             ],
             'comment' => $booking->getComment(),
             'status' => $booking->getStatus(),
             'createdAt' => $booking->getCreatedAt()->format('Y-m-d H:i:s'),
-            'updatedAt' => $booking->getUpdatedAt()->format('Y-m-d H:i:s')
+            'updatedAt' => $booking->getUpdatedAt()->format('Y-m-d H:i:s'),
         ];
 
         return $this->json($data);

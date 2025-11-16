@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Entity\Booking;
-use App\Entity\User;
 use App\Entity\House;
+use App\Entity\User;
 use App\Repository\Interfaces\BookingRepositoryInterface;
+use InvalidArgumentException;
 
 class BookingService
 {
     public function __construct(
-        private BookingRepositoryInterface $bookingRepository
+        private BookingRepositoryInterface $bookingRepository,
     ) {
     }
 
     public function createBooking(User $user, House $house, string $comment): Booking
     {
         if (!$house->isAvailable()) {
-            throw new \InvalidArgumentException('House is not available');
+            throw new InvalidArgumentException('House is not available');
         }
 
         $booking = new Booking($user, $house, $comment, 'pending');
@@ -31,7 +34,7 @@ class BookingService
         $booking = $this->bookingRepository->findById($bookingId);
 
         if (!$booking) {
-            throw new \InvalidArgumentException('Booking not found');
+            throw new InvalidArgumentException('Booking not found');
         }
 
         $booking->setStatus('confirmed');
@@ -43,15 +46,15 @@ class BookingService
         $booking = $this->bookingRepository->findById($bookingId);
 
         if (!$booking) {
-            throw new \InvalidArgumentException('Booking not found');
+            throw new InvalidArgumentException('Booking not found');
         }
 
         if ($booking->getGuest()->getId() !== $user->getId()) {
-            throw new \InvalidArgumentException('You can only cancel your own bookings');
+            throw new InvalidArgumentException('You can only cancel your own bookings');
         }
 
         if (!in_array($booking->getStatus(), ['pending', 'confirmed'])) {
-            throw new \InvalidArgumentException('This booking cannot be cancelled');
+            throw new InvalidArgumentException('This booking cannot be cancelled');
         }
 
         $booking->setStatus('cancelled');
