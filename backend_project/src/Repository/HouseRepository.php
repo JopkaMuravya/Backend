@@ -11,6 +11,9 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class HouseRepository extends ServiceEntityRepository implements HouseRepositoryInterface
 {
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, House::class);

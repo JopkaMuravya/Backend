@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -64,6 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->phone;
     }
+    #[Override]
     public function getPassword(): string
     {
         return $this->password;
@@ -76,16 +78,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->lastName;
     }
+    #[Override]
     public function getRoles(): array
     {
         return $this->roles;
     }
 
     // Методы UserInterface
+    #[Override]
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
+    #[Override]
     public function eraseCredentials(): void
     {
     }

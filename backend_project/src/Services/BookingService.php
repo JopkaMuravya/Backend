@@ -12,6 +12,9 @@ use InvalidArgumentException;
 
 class BookingService
 {
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function __construct(
         private BookingRepositoryInterface $bookingRepository,
     ) {
@@ -29,6 +32,9 @@ class BookingService
         return $booking;
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function confirmBooking(int $bookingId): void
     {
         $booking = $this->bookingRepository->findById($bookingId);
@@ -61,16 +67,25 @@ class BookingService
         $this->bookingRepository->save($booking);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function getUserBookings(User $user): array
     {
         return $this->bookingRepository->findByUser($user);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function getPendingBookings(): array
     {
         return $this->bookingRepository->findByPending();
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function getHouseBookings(House $house): array
     {
         return $this->bookingRepository->findByHouse($house);

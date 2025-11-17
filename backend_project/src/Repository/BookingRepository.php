@@ -13,6 +13,9 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class BookingRepository extends ServiceEntityRepository implements BookingRepositoryInterface
 {
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Booking::class);
