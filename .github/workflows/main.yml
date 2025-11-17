@@ -84,3 +84,56 @@ jobs:
           backend_project/var/log/
           backend_project/var/cache/
         retention-days: 7
+
+  phpcs:
+    name: PHP Code Sniffer
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl
+
+    - name: Install dependencies
+      working-directory: ./backend_project
+      run: composer install --prefer-dist --no-progress --no-interaction
+
+    - name: Run PHP Code Sniffer
+      working-directory: ./backend_project
+      run: |
+        echo "=== Running PHP Code Sniffer ==="
+        ./vendor/bin/phpcs --version
+        ./vendor/bin/phpcs -n --standard=PSR12 src/ tests/
+        echo "Code style check passed!"
+
+  psalm:
+    name: Psalm Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl
+
+    - name: Install dependencies
+      working-directory: ./backend_project
+      run: composer install --prefer-dist --no-progress --no-interaction
+
+    - name: Run Psalm
+      working-directory: ./backend_project
+      run: |
+        echo "=== Running Psalm ==="
+        ./vendor/bin/psalm --version
+        ./vendor/bin/psalm --output-format=github
+        echo "Static analysis passed!"
+        
