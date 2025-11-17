@@ -15,9 +15,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: app           
-          POSTGRES_PASSWORD: "1234567890Q"  
-          POSTGRES_USER: app         
+          POSTGRES_DB: app
+          POSTGRES_PASSWORD: "1234567890Q"
+          POSTGRES_USER: app
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -30,6 +30,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Debug - Check structure
+      run: |
+        echo "=== Root contents ==="
+        ls -la
+        echo "=== Project folder contents ==="
+        ls -la backend_project/
+
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -37,30 +44,35 @@ jobs:
         extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql, zip
         coverage: none
 
-    - name: Validate composer.json
-      run: composer validate --strict
-
     - name: Install dependencies
+      working-directory: ./backend_project
       run: composer install --prefer-dist --no-progress --no-interaction
 
-    - name: Create test environment file
+    - name: Create test environment
+      working-directory: ./backend_project
       run: |
-        if [ -f .env.test ]; then
-          cp .env.test .env
-        else
-          cat > .env << 'EOF'
-          APP_ENV=test
-          DATABASE_URL="postgresql://app:1234567890Q@localhost:5432/app?serverVersion=16&charset=utf8"
-          APP_SECRET=testsecret123
-          EOF
-        fi
+        cat > .env << 'EOF'
+        APP_ENV=test
+        DATABASE_URL="postgresql://app:1234567890Q@postgres:5432/app?serverVersion=16&charset=utf8"
+        APP_SECRET=testsecret123
+        EOF
 
     - name: Create database
+      working-directory: ./backend_project
       run: |
         php bin/console doctrine:database:create --env=test --if-not-exists
         php bin/console doctrine:migrations:migrate --env=test --no-interaction
 
+    - name: Check tests
+      working-directory: ./backend_project
+      run: |
+        echo "=== Looking for tests ==="
+        find tests/ -name "*Test.php" | head -10
+        echo "Total tests: $(find tests/ -name "*Test.php" | wc -l)"
+        ./vendor/bin/phpunit --version
+
     - name: Run PHPUnit tests
+      working-directory: ./backend_project
       run: ./vendor/bin/phpunit --colors=always
 
     - name: Upload test results
@@ -69,6 +81,58 @@ jobs:
       with:
         name: test-results
         path: |
-          var/log/
-          var/cache/
+          backend_project/var/log/
+          backend_project/var/cache/
         retention-days: 7
+
+  phpcs:
+    name: PHP Code Sniffer
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl
+
+    - name: Install dependencies
+      working-directory: ./backend_project
+      run: composer install --prefer-dist --no-progress --no-interaction
+
+    - name: Run PHP Code Sniffer
+      working-directory: ./backend_project
+      run: |
+        echo "=== Running PHP Code Sniffer ==="
+        ./vendor/bin/phpcs --version
+        ./vendor/bin/phpcs -n --standard=PSR12 src/ tests/
+        echo "Code style check passed!"
+
+  psalm:
+    name: Psalm Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl
+
+    - name: Install dependencies
+      working-directory: ./backend_project
+      run: composer install --prefer-dist --no-progress --no-interaction
+
+    - name: Run Psalm
+      working-directory: ./backend_project
+      run: |
+        echo "=== Running Psalm ==="
+        ./vendor/bin/psalm --version
+        ./vendor/bin/psalm --output-format=github
+        echo "Static analysis passed!"
