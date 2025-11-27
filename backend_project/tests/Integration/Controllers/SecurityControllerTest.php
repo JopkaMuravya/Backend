@@ -22,7 +22,6 @@ class SecurityControllerTest extends WebTestCase
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         
-        // Очищаем БД перед каждым тестом
         $this->clearDatabase();
     }
 
@@ -30,16 +29,13 @@ class SecurityControllerTest extends WebTestCase
     {
         $connection = $this->entityManager->getConnection();
         
-        // Отключаем foreign key checks
         $connection->executeStatement('SET session_replication_role = replica;');
         
-        // Удаляем все данные из таблиц
         $tables = $connection->createSchemaManager()->listTableNames();
         foreach ($tables as $table) {
             $connection->executeStatement("DELETE FROM {$table}");
         }
         
-        // Включаем foreign key checks обратно
         $connection->executeStatement('SET session_replication_role = origin;');
     }
 
@@ -65,7 +61,6 @@ class SecurityControllerTest extends WebTestCase
 
     public function testSuccessfulLogin(): void
     {
-        // Используем уникальные данные для каждого теста
         $this->createTestUser('test1@example.com', '+79161111111');
         
         $this->client->request(
@@ -90,7 +85,6 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLoginWithInvalidCredentials(): void
     {
-        // Используем уникальные данные
         $this->createTestUser('test2@example.com', '+79162222222');
         
         $this->client->request(
@@ -109,8 +103,6 @@ class SecurityControllerTest extends WebTestCase
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
-        // Убираем проверку last_phone, так как её может не быть в ответе
-        // $this->assertArrayHasKey('last_phone', $response);
     }
 
     public function testLoginWithoutRequiredFields(): void
@@ -129,10 +121,8 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLogout(): void
     {
-        // Используем уникальные данные
         $user = $this->createTestUser('logout@example.com', '+79164444444');
         
-        // Логинимся перед logout
         $this->client->loginUser($user);
 
         $this->client->request('POST', '/api/logout');
@@ -140,7 +130,6 @@ class SecurityControllerTest extends WebTestCase
          $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();
         
-        // Дополнительно проверяем что пользователь разлогинен
         $this->client->request('GET', '/api/profile');
         $this->assertResponseStatusCodeSame(401);
     }
