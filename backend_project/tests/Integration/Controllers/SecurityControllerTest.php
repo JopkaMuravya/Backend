@@ -21,21 +21,21 @@ class SecurityControllerTest extends WebTestCase
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);
-        
+
         $this->clearDatabase();
     }
 
     private function clearDatabase(): void
     {
         $connection = $this->entityManager->getConnection();
-        
+
         $connection->executeStatement('SET session_replication_role = replica;');
-        
+
         $tables = $connection->createSchemaManager()->listTableNames();
         foreach ($tables as $table) {
             $connection->executeStatement("DELETE FROM {$table}");
         }
-        
+
         $connection->executeStatement('SET session_replication_role = origin;');
     }
 
@@ -49,20 +49,20 @@ class SecurityControllerTest extends WebTestCase
             'User',
             ['ROLE_USER']
         );
-        
+
         $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
-        
+
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        
+
         return $user;
     }
 
     public function testSuccessfulLogin(): void
     {
         $this->createTestUser('test1@example.com', '+79161111111');
-        
+
         $this->client->request(
             'POST',
             '/api/login',
@@ -86,7 +86,7 @@ class SecurityControllerTest extends WebTestCase
     public function testLoginWithInvalidCredentials(): void
     {
         $this->createTestUser('test2@example.com', '+79162222222');
-        
+
         $this->client->request(
             'POST',
             '/api/login',
@@ -122,14 +122,14 @@ class SecurityControllerTest extends WebTestCase
     public function testLogout(): void
     {
         $user = $this->createTestUser('logout@example.com', '+79164444444');
-        
+
         $this->client->loginUser($user);
 
         $this->client->request('POST', '/api/logout');
 
          $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects();
-        
+
         $this->client->request('GET', '/api/profile');
         $this->assertResponseStatusCodeSame(401);
     }
