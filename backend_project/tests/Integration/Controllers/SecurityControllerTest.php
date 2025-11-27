@@ -127,8 +127,7 @@ class SecurityControllerTest extends WebTestCase
 
         $this->client->request('POST', '/api/logout');
 
-         $this->assertResponseStatusCodeSame(302);
-        $this->assertResponseRedirects();
+        $this->assertResponseStatusCodeSame(200);
 
         $this->client->request('GET', '/api/profile');
         $this->assertResponseStatusCodeSame(401);

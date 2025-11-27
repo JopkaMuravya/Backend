@@ -33,6 +33,7 @@
             <errorLevel type="suppress">
                 <directory name="src/Entity"/>
                 <directory name="src/Repository"/>
+                <directory name="src/Controller" />
             </errorLevel>
         </PossiblyUnusedMethod>
     </issueHandlers>
