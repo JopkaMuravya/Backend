@@ -53,7 +53,7 @@ jobs:
       run: |
         cat > .env << 'EOF'
         APP_ENV=test
-        DATABASE_URL="postgresql://app:1234567890Q@postgres:5432/app?serverVersion=16&charset=utf8"
+        DATABASE_URL="postgresql://app:1234567890Q@localhost:5432/app?serverVersion=16&charset=utf8"
         APP_SECRET=testsecret123
         EOF
 
