@@ -34,6 +34,11 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $this->findOneBy(['email' => $email]);
     }
 
+    public function findByPhone(string $phone): ?User
+    {
+        return $this->findOneBy(['phone' => $phone]);
+    }
+
     public function findAll(): array
     {
         return parent::findAll();

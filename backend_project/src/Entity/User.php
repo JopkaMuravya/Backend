@@ -21,7 +21,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 20)]
+    #[ORM\Column(type: 'string', length: 20, unique: true)]
     private string $phone;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -88,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Override]
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->phone;
     }
     #[Override]
     public function eraseCredentials(): void

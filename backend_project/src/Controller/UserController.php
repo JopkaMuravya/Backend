@@ -32,7 +32,7 @@ class UserController extends AbstractController
         if (!$user) {
             return $this->json([
                 'error' => 'Authentication required',
-            ], Response::HTTP_UNAUTHORIZED); // 401
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $data = [
@@ -58,6 +58,7 @@ class UserController extends AbstractController
             return [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
+                'phone' => $user->getPhone(),
                 'firstName' => $user->getFirstName(),
                 'lastName' => $user->getLastName(),
                 'roles' => $user->getRoles(),
@@ -81,9 +82,9 @@ class UserController extends AbstractController
         $data = [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
+            'phone' => $user->getPhone(),
             'firstName' => $user->getFirstName(),
             'lastName' => $user->getLastName(),
-            'phone' => $user->getPhone(),
             'roles' => $user->getRoles(),
         ];
 
@@ -116,6 +117,14 @@ class UserController extends AbstractController
                 'error' => 'User with this email already exists',
             ], Response::HTTP_CONFLICT);
         }
+
+        $existingUserByPhone = $this->userRepository->findByPhone($phone);
+        if ($existingUserByPhone) {
+            return $this->json([
+                'error' => 'User with this phone number already exists',
+            ], Response::HTTP_CONFLICT);
+        }
+
 
         try {
             $user = new User(

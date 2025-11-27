@@ -24,6 +24,7 @@ class SecurityController extends AbstractController
                 'message' => 'Already logged in',
                 'user' => [
                     'id' => $user->getId(),
+                    'phone' => $user->getPhone(),
                     'email' => $user->getEmail(),
                     'roles' => $user->getRoles(),
                 ],
@@ -31,12 +32,18 @@ class SecurityController extends AbstractController
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $lastPhone = $authenticationUtils->getLastUsername();
 
-        return $this->json([
+        $responseData = [
             'error' => $error ? $error->getMessage() : 'Authentication failed',
-            'last_username' => $lastUsername,
-        ], Response::HTTP_UNAUTHORIZED);
+            'message' => 'Invalid phone or password',
+        ];
+
+        if ($lastPhone) {
+            $responseData['last_phone'] = $lastPhone;
+        }
+
+        return $this->json($responseData, Response::HTTP_UNAUTHORIZED);
     }
 
     #[Route('/logout', name: 'api_logout', methods: ['POST'])]
