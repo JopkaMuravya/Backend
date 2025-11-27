@@ -1,0 +1,11 @@
+api_platform:
+    title: My API
+    version: 1.0.0
+    mapping:
+        paths:
+            - '%kernel.project_dir%/src/Entity'
+            - '%kernel.project_dir%/src/ApiResource'
+    defaults:
+        stateless: false
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
