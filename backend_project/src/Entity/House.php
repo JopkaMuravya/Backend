@@ -4,10 +4,33 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use App\Controller\HouseController;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repository\HouseRepository")]
 #[ORM\Table(name: 'houses')]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/houses',
+            controller: HouseController::class . '::list',
+            description: 'Get all houses'
+        ),
+        new GetCollection(
+            uriTemplate: '/houses/available',
+            controller: HouseController::class . '::available',
+            description: 'Get available houses'
+        ),
+        new Get(
+            uriTemplate: '/houses/{id}',
+            controller: HouseController::class . '::show',
+            description: 'Get house by ID'
+        ),
+    ]
+)]
 class House
 {
     #[ORM\Id]

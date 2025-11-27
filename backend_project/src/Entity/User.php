@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use App\Controller\UserController;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -11,6 +16,30 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: "App\Repository\UserRepository")]
 #[ORM\Table(name: 'users')]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/users',
+            controller: UserController::class . '::list',
+            description: 'Get all users (admin only)'
+        ),
+        new Get(
+            uriTemplate: '/users/{id}',
+            controller: UserController::class . '::show',
+            description: 'Get user by ID (admin only)'
+        ),
+        new Post(
+            uriTemplate: '/register',
+            controller: UserController::class . '::register',
+            description: 'Register new user'
+        ),
+        new Get(
+            uriTemplate: '/profile',
+            controller: UserController::class . '::profile',
+            description: 'Get current user profile'
+        ),
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]

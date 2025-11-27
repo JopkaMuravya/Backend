@@ -4,12 +4,46 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use App\Controller\BookingController;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repository\BookingRepository")]
 #[ORM\Table(name: 'bookings')]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/bookings',
+            controller: BookingController::class . '::list',
+            description: 'Get user bookings'
+        ),
+        new GetCollection(
+            uriTemplate: '/bookings/pending',
+            controller: BookingController::class . '::pending',
+            description: 'Get pending bookings (admin)'
+        ),
+        new Post(
+            uriTemplate: '/bookings',
+            controller: BookingController::class . '::create',
+            description: 'Create new booking'
+        ),
+        new Post(
+            uriTemplate: '/bookings/{id}/cancel',
+            controller: BookingController::class . '::cancel',
+            description: 'Cancel booking'
+        ),
+        new Get(
+            uriTemplate: '/bookings/{id}',
+            controller: BookingController::class . '::show',
+            description: 'Get booking by ID'
+        ),
+    ]
+)]
 class Booking
 {
     #[ORM\Id]
