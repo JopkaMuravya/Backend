@@ -3,10 +3,11 @@ FROM php:8.3-fpm
 # Установка системных зависимостей
 RUN apt-get update && apt-get install -y \
     libpq-dev \
-    postgresql-client
+    postgresql-client \
+    libicu-dev
 
 # Установка расширений PHP
-RUN docker-php-ext-install pdo pdo_pgsql
+RUN docker-php-ext-install pdo pdo_pgsql intl
 
 # Рабочая директория
 WORKDIR /var/www/project

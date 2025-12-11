@@ -72,6 +72,11 @@ class House
         $this->isAvailable = $isAvailable;
     }
 
+    public function __toString(): string
+    {
+        return (string) $this->id;
+    }
+
     // Геттеры
     public function getId(): int
     {
