@@ -66,6 +66,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true, unique: true)]
+    private ?string $yandexId = null;
+
     public function __construct(
         string $email,
         string $phone,
@@ -80,6 +83,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->roles = $roles;
+    }
+
+    public static function createFromYandex(
+        string $yandexId,
+        string $phone,
+        string $email,
+        string $firstName,
+        string $lastName
+    ): self {
+        $tempPassword = bin2hex(random_bytes(16));
+        
+        $user = new self(
+            phone: $phone,
+            password: $tempPassword,
+            firstName: $firstName,
+            lastName: $lastName,
+            email: $email
+        );
+        
+        $user->setYandexId($yandexId);
+        
+        return $user;
     }
 
     public function __toString(): string
@@ -119,6 +144,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->roles;
     }
 
+    public function getYandexId(): ?string
+    {
+        return $this->yandexId;
+    }
+
     // Методы UserInterface
     #[Override]
     public function getUserIdentifier(): string
@@ -139,10 +169,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
     }
+    public function setEmail(?string $email): void
+    {
+        $this->email = $email;
+    }
+    public function setYandexId(?string $yandexId): void
+    {
+        $this->yandexId = $yandexId;
+    }
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+    public function setPhone(string $phone): void
+    {
+        $this->phone = $phone;
+    }
 
     //Бизнес-логика
     public function getFullName(): string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    public function updateFromYandex(string $phone, string $email, string $firstName, string $lastName): void
+    {
+        $this->phone = $phone;
+        if ($email) {
+            $this->email = $email;
+        }
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+    }
+
+    public function isYandexUser(): bool
+    {
+        return $this->yandexId !== null;
     }
 }

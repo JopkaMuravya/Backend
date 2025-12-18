@@ -1,0 +1,7 @@
+hwi_oauth:
+    resource_owners:
+        yandex:
+            type:                yandex
+            client_id:           '%env(OAUTH_YANDEX_ID)%'
+            client_secret:       '%env(OAUTH_YANDEX_SECRET)%'
+            scope:               "login:email login:info login:default_phone"
