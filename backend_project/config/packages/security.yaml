@@ -8,6 +8,9 @@ security:
             entity:
                 class: App\Entity\User
                 property: phone
+        
+        oauth_user_provider:
+            id: App\Security\Core\User\OAuthUserProvider
 
     firewalls:
         dev:
@@ -30,6 +33,33 @@ security:
                 target: admin_login
 
         main:
+            pattern: ^/(?!api|admin)
+            lazy: true
+            provider: app_user_provider
+            entry_point: form_login
+            
+            oauth:
+                resource_owners:
+                    yandex: "/connect/check-yandex"
+                login_path: app_login
+                failure_path: app_login
+                default_target_path: /
+                oauth_user_provider:
+                    service: 'App\Security\Core\User\OAuthUserProvider'
+            
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                default_target_path: /
+                username_parameter: _username
+                password_parameter: _password
+            
+            logout:
+                path: /logout
+                target: /
+
+        api:
             pattern: ^/api
             lazy: true
             provider: app_user_provider
@@ -42,16 +72,26 @@ security:
 
 
     access_control:
+        # Публичные маршруты для веб-части
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/connect, roles: PUBLIC_ACCESS }
+        
+        # Публичные маршруты для API
         - { path: ^/api$, roles: PUBLIC_ACCESS }
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/houses, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/bookings/pending, methods: [GET], roles: PUBLIC_ACCESS }
+        
+        # Админка
         - { path: ^/admin/login, roles: PUBLIC_ACCESS }
-
         - { path: ^/admin, roles: ROLE_ADMIN }
+        
+        # Остальные маршруты API требуют авторизации
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(?!login|register|connect), roles: ROLE_USER }
 
 when@test:
     security:
