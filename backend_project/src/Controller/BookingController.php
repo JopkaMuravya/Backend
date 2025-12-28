@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Repository\BookingRepository;
 use App\Entity\Booking;
 
@@ -22,10 +23,7 @@ class BookingController extends AbstractController
         $data = json_decode($request->getContent(), true);
         
         if (empty($data['guest_phone']) || empty($data['house_id'])) {
-            return $this->json([
-                'success' => false,
-                'error' => 'Нужны номер телефона и ID домика'
-            ], 400);
+            throw new HttpException(400, 'Нужны номер телефона и ID домика');
         }
 
         $booking = Booking::createNew(
@@ -37,18 +35,15 @@ class BookingController extends AbstractController
 
         $result = $this->bookingRepository->save($booking);
 
-        if ($result) {
-            return $this->json([
-                'success' => true,
-                'message' => 'Заявка создана!',
-                'booking_id' => $booking->getId()
-            ], 201);
-        } else {
-            return $this->json([
-                'success' => false,
-                'error' => 'Ошибка при создании заявки'
-            ], 500);
+        if (!$result) {
+            throw new HttpException(500, 'Ошибка при создании заявки');
         }
+
+        return $this->json([
+            'success' => true,
+            'message' => 'Заявка создана!',
+            'booking_id' => $booking->getId()
+        ], 201);
     }
 
     #[Route('/bookings/{id}', methods: ['PUT'])]
@@ -57,35 +52,26 @@ class BookingController extends AbstractController
         $data = json_decode($request->getContent(), true);
         
         if (empty($data['comment'])) {
-            return $this->json([
-                'success' => false,
-                'error' => 'Комментарий не может быть пустым'
-            ], 400);
+            throw new HttpException(400, 'Комментарий не может быть пустым');
         }
 
         $booking = $this->bookingRepository->findById($id);
         if (!$booking) {
-            return $this->json([
-                'success' => false,
-                'error' => 'Заявка не найдена'
-            ], 404);
+            throw new HttpException(404, 'Заявка не найдена');
         }
 
         $booking->setComment($data['comment']);
         
         $result = $this->bookingRepository->save($booking);
 
-        if ($result) {
-            return $this->json([
-                'success' => true,
-                'message' => 'Комментарий обновлен!'
-            ]);
-        } else {
-            return $this->json([
-                'success' => false,
-                'error' => 'Ошибка при обновлении'
-            ], 500);
+        if (!$result) {
+            throw new HttpException(500, 'Ошибка при обновлении');
         }
+
+        return $this->json([
+            'success' => true,
+            'message' => 'Комментарий обновлен!'
+        ]);
     }
 
     #[Route('/bookings/{id}', methods: ['DELETE'])]
@@ -93,16 +79,13 @@ class BookingController extends AbstractController
     {
         $result = $this->bookingRepository->delete($id);
 
-        if ($result) {
-            return $this->json([
-                'success' => true,
-                'message' => 'Заявка удалена!'
-            ]);
-        } else {
-            return $this->json([
-                'success' => false,
-                'error' => 'Заявка не найдена'
-            ], 404);
+        if (!$result) {
+            throw new HttpException(404, 'Заявка не найдена');
         }
+
+        return $this->json([
+            'success' => true,
+            'message' => 'Заявка удалена!'
+        ]);
     }
 }

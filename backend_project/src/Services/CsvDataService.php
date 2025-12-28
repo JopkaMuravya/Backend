@@ -5,28 +5,28 @@ namespace App\Services;
 class CsvDataService
 {
     public function __construct(
-        private string $housesFile = __DIR__ . '/../data/houses.csv',
-        private string $bookingsFile = __DIR__ . '/../data/bookings.csv'
+        private string $housesFilePath,
+        private string $bookingsFilePath
     ){}
 
     public function readHouses(): array
     {
-        return $this->readCSV($this->housesFile);
+        return $this->readCSV($this->housesFilePath);
     }
 
     public function readBookings(): array
     {
-        return $this->readCSV($this->bookingsFile);
+        return $this->readCSV($this->bookingsFilePath);
     }
 
     public function writeHouses(array $houses): bool
     {
-        return $this->writeCSV($this->housesFile, $houses);
+        return $this->writeCSV($this->housesFilePath, $houses);
     }
 
     public function writeBookings(array $bookings): bool
     {
-        return $this->writeCSV($this->bookingsFile, $bookings);
+        return $this->writeCSV($this->bookingsFilePath, $bookings);
     }
 
     private function readCSV(string $file): array
