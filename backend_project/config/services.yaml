@@ -4,7 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    csv.houses_path: '%kernel.project_dir%/data/houses.csv'
+    csv.bookings_path: '%kernel.project_dir%/data/bookings.csv'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -15,6 +16,11 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+    
+    App\Services\CsvDataService:
+        arguments:
+            $housesFilePath: '%csv.houses_path%'
+            $bookingsFilePath: '%csv.bookings_path%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
